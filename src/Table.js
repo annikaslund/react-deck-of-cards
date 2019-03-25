@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from "axios";
+import uuid from "uuid/v4";
 import Card from "./Card";
 
 class Table extends Component {
@@ -8,13 +9,12 @@ class Table extends Component {
         this.state = {
             deckId: "",
             cardsImgs: [],
-            topCardImg: "",
-            empty: true,
             error: null
         }
         this.handleClick = this.handleClick.bind(this);
     }
 
+    // after mounting stage, makes API call to get a new deck and saves deck id. 
     async componentDidMount(){
         try {
             let result = await axios.get("https://deckofcardsapi.com/api/deck/new/")
@@ -28,16 +28,14 @@ class Table extends Component {
         }
     }
 
+    // on click, makes API call for a card given the deckID. updates state with new card image 
     async handleClick(evt) {
-        //evt.preventDefault(); // don't need for non submit?
         try {
             let newCardInfo = await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deckId}/draw/?count=1`);
             let cardImg = newCardInfo.data.cards[0].image;
             this.setState({ 
-                cardsImgs: [...this.state.cardsImgs, cardImg],
-                topCardImg: cardImg,
-                empty: false
-            })
+                cardsImgs: [...this.state.cardsImgs, cardImg]
+            });
         } catch (err) {
             this.setState({
                 error: "not a valid request."
@@ -50,7 +48,9 @@ class Table extends Component {
                 <div className="Table">
                     <p>{this.state.error}</p>
                     {this.state.cardsImgs.length < 52 ? <button onClick={this.handleClick} >Gimme a card!</button> : null }
-                    {this.state.empty === true ? null : <Card topCardImg={this.state.topCardImg}/> }
+                    {this.state.cardsImgs.map(card => (
+                        <Card key={ uuid() } img={card} />
+                    ))}
                 </div>
             );
         }
