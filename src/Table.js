@@ -7,24 +7,48 @@ class Table extends Component {
         super(props);
         this.state = {
             deckId: "",
-            card: []
+            cardsImgs: [],
+            topCardImg: "",
+            error: null
         }
-
-        // this.handleClick = this.handleClick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     async componentDidMount(){
-        let result = await axios.get("https://deckofcardsapi.com/api/deck/new/")
-        this.setState({
-            deckId: result.data.deck_id
-        })
+        try {
+            let result = await axios.get("https://deckofcardsapi.com/api/deck/new/")
+            this.setState({
+                deckId: result.data.deck_id
+            })
+        } catch (err) {
+            this.setState({
+                error: "not a valid request."
+            })
+        }
+    }
+
+    async handleClick(evt) {
+        //evt.preventDefault(); // don't need for non submit?
+        try {
+            let newCardInfo = await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deckId}/draw/?count=1`);
+            let cardImg = newCardInfo.data.cards[0].image;
+            this.setState({ 
+                cardsImgs: [...this.state.cardsImgs, cardImg],
+                topCardImg: cardImg
+            })
+        } catch (err) {
+            this.setState({
+                error: "not a valid request."
+            })
+        }    
     }
 
     render(){
         return (
             <div className="Table">
-                <button>Gimme a card!</button>
-                <Card />
+                <p>{this.state.error}</p>
+                <button onClick={this.handleClick} >Gimme a card!</button>
+                <Card topCardImg={this.state.topCardImg}/>
             </div>
         );
     }
