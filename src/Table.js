@@ -9,6 +9,7 @@ class Table extends Component {
             deckId: "",
             cardsImgs: [],
             topCardImg: "",
+            empty: true,
             error: null
         }
         this.handleClick = this.handleClick.bind(this);
@@ -34,7 +35,8 @@ class Table extends Component {
             let cardImg = newCardInfo.data.cards[0].image;
             this.setState({ 
                 cardsImgs: [...this.state.cardsImgs, cardImg],
-                topCardImg: cardImg
+                topCardImg: cardImg,
+                empty: false
             })
         } catch (err) {
             this.setState({
@@ -45,13 +47,13 @@ class Table extends Component {
 
     render(){
         return (
-            <div className="Table">
-                <p>{this.state.error}</p>
-                <button onClick={this.handleClick} >Gimme a card!</button>
-                <Card topCardImg={this.state.topCardImg}/>
-            </div>
-        );
+                <div className="Table">
+                    <p>{this.state.error}</p>
+                    {this.state.cardsImgs.length < 52 ? <button onClick={this.handleClick} >Gimme a card!</button> : null }
+                    {this.state.empty === true ? null : <Card topCardImg={this.state.topCardImg}/> }
+                </div>
+            );
+        }
     }
-}
 
 export default Table
