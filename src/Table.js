@@ -17,7 +17,7 @@ class Table extends Component {
     // after mounting stage, makes API call to get a new deck and saves deck id. 
     async componentDidMount(){
         try {
-            let result = await axios.get("https://deckofcardsapi.com/api/deck/new/")
+            let result = await axios.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
             this.setState({
                 deckId: result.data.deck_id
             })
@@ -43,6 +43,7 @@ class Table extends Component {
         }    
     }
 
+    // renders a button if there are less than 52 cards in the cardsImgs array and creates a Card for each.
     render(){
         return (
                 <div className="Table">
